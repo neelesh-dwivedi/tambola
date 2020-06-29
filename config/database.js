@@ -14,7 +14,7 @@ mongoose.Promise = require("bluebird");
 // Connect to Db
 function connectDb(callback) {
   const dbName = 'tambola';
-  let dbUrl = 'mongodb://localhost:27017/';
+  let dbUrl = 'mongodb://mongo:27017/';
   let dbOptions;
     dbOptions = {
     //   user: process.env.MONGODB_USER,

@@ -46,6 +46,6 @@ app.use((req, res, next) => {
     next(err);
   });
 
-
-app.listen(3000, () =>console.log("Server Up and Running"));
+const port = 3000;
+app.listen(port, () => console.log("Server Up and Running on port " + port));
 })
