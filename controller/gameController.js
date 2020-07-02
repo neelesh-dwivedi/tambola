@@ -7,19 +7,16 @@ const resHandler = require("../resHandler");
 //= ========================= Load Modules End ==============================================
 
 const createGame = async (req, res, next) => {
-  try {
     const drawSequence = ticketGenerator.getDrawSequence();
-    let result = await gameDao.createGame({drawSequence});
+    let result = await gameDao.createGame({drawSequence})
+      .catch(() => resHndlr.sendError(res, error));
     resHndlr.sendSuccess(res, {_id: result._id, message: "Game created successfully"});
-  } catch (error) {
-    resHndlr.sendError(res, error)
-  }
 }
 
 const generateTicket = async (req, res, next) => {
-  try {
-    const checkGameExists = await gameDao.checkGameExists({_id: mongoose.Types.ObjectId(req.params.game_id)});
-    console.log()
+    const checkGameExists = await gameDao.checkGameExists({_id: mongoose.Types.ObjectId(req.params.game_id)})
+      .catch(error => resHndlr.sendError(res, error));
+
     if (!checkGameExists) {
       throw customException.gameDoesNotExists();
     }
@@ -28,59 +25,51 @@ const generateTicket = async (req, res, next) => {
       userName: req.params.user_name,
       gameId: mongoose.Types.ObjectId(req.params.game_id)
     }
-    const result = await gameDao.generateTicket(params);
+    const result = await gameDao.generateTicket(params)
+      .catch(() => resHndlr.sendError(res, error));
     resHndlr.sendSuccess(res, {_id: result._id, message: "Ticket generated successfully"});
-  } catch (error) {
-    resHndlr.sendError(res, error)
-  }
 }
 
 const pickRandomNumber = async (req, res, next) => {
-  try {
-    const checkGameExists = await gameDao.checkGameExists({_id: mongoose.Types.ObjectId(req.params.game_id)});
+    const checkGameExists = await gameDao.checkGameExists({_id: mongoose.Types.ObjectId(req.params.game_id)})
+      .catch(error => resHndlr.sendError(res, error));
+    
     if (!checkGameExists) {
       throw customException.gameDoesNotExists();
     }
-    await gameDao.updateGameIndex({_id: mongoose.Types.ObjectId(req.params.game_id)});
+    await gameDao.updateGameIndex({_id: mongoose.Types.ObjectId(req.params.game_id)})
+      .catch(() => resHndlr.sendError(res, error));
     resHndlr.sendSuccess(res, {randomNumber: checkGameExists.drawSequence[checkGameExists.index]});
-  } catch (error) {
-    resHndlr.sendError(res, error)
-  }
 }
 
 const getGeneratedSequence = async (req, res, next) => {
-  try {
-    const checkGameExists = await gameDao.checkGameExists({_id: mongoose.Types.ObjectId(req.params.game_id)});
+    const checkGameExists = await gameDao.checkGameExists({_id: mongoose.Types.ObjectId(req.params.game_id)})
+      .catch(error => resHndlr.sendError(res, error));
     if (!checkGameExists) {
       throw customException.gameDoesNotExists();
     }
     resHandler.sendSuccess(res, {generatedSequence: checkGameExists.drawSequence.slice(0, checkGameExists.index)});
-  } catch (error) {
-    resHndlr.sendError(res, error);
-  }
 }
 
 const getStatistics = async (req, res, next) => {
-  try {
-    const checkGameExists = await gameDao.checkGameExists({_id: mongoose.Types.ObjectId(req.params.game_id)});
+    const checkGameExists = await gameDao.checkGameExists({_id: mongoose.Types.ObjectId(req.params.game_id)})
+      .catch(error => resHndlr.sendError(res, error));
     if (!checkGameExists) {
       throw customException.gameDoesNotExists();
     }
-    const stats = await gameDao.getStatistics({_id: mongoose.Types.ObjectId(req.params.game_id)});
+    const stats = await gameDao.getStatistics({_id: mongoose.Types.ObjectId(req.params.game_id)})
+      .catch((error) => resHndlr.sendError(res, error));
     const result = {
       totalNumbersDraws: stats[0].index,
       totalUsers: stats[0].users.length,
       totalTickets: stats[0].tickets.length
     }
     resHndlr.sendSuccess(res, result);
-  } catch (error) {
-    resHndlr.sendError(res, error)
-  }
 }
 
 const getTicket = async (req, res, next) => {
-  try {
-    const checkTicketExists = await gameDao.checkTicketExists({_id: mongoose.Types.ObjectId(req.params.ticket_id)});
+    const checkTicketExists = await gameDao.checkTicketExists({_id: mongoose.Types.ObjectId(req.params.ticket_id)})
+      .catch(error => resHndlr.sendError(res, error));
     if (!checkTicketExists) {
       throw customException.ticketDoesNotExists();
     }
@@ -94,9 +83,6 @@ const getTicket = async (req, res, next) => {
     }
     ticketHtml = ticketHtml.replace('-ticket-', row);
     resHndlr.sendSuccess(res, {html: ticketHtml});
-  } catch (error) {
-    resHndlr.sendError(res, error);
-  }
 }
 //= =======================================Export module====================================
 module.exports = {
