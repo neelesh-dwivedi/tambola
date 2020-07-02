@@ -9,7 +9,7 @@ const resHandler = require("../resHandler");
 const createGame = async (req, res, next) => {
     const drawSequence = ticketGenerator.getDrawSequence();
     let result = await gameDao.createGame({drawSequence})
-      .catch(() => resHndlr.sendError(res, error));
+      .catch((error) => resHndlr.sendError(res, error));
     resHndlr.sendSuccess(res, {_id: result._id, message: "Game created successfully"});
 }
 
@@ -26,7 +26,7 @@ const generateTicket = async (req, res, next) => {
       gameId: mongoose.Types.ObjectId(req.params.game_id)
     }
     const result = await gameDao.generateTicket(params)
-      .catch(() => resHndlr.sendError(res, error));
+      .catch((error) => resHndlr.sendError(res, error));
     resHndlr.sendSuccess(res, {_id: result._id, message: "Ticket generated successfully"});
 }
 
@@ -38,7 +38,7 @@ const pickRandomNumber = async (req, res, next) => {
       throw customException.gameDoesNotExists();
     }
     await gameDao.updateGameIndex({_id: mongoose.Types.ObjectId(req.params.game_id)})
-      .catch(() => resHndlr.sendError(res, error));
+      .catch((error) => resHndlr.sendError(res, error));
     resHndlr.sendSuccess(res, {randomNumber: checkGameExists.drawSequence[checkGameExists.index]});
 }
 
